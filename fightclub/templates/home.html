@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- ag-Grid styles -->
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-alpine.css">
+    <style>
+        /* For CSS */
+        /* Optional: Add styling to your ag-Grid container */
+        .ag-theme-alpine {
+            height: 300px;
+            width: 80%;
+            margin: 20px auto;
+
+        }
+
+        /* Center text content in the cells */
+        .ag-theme-alpine .ag-cell {
+            text-align: center;
+            line-height: 40px; /* Adjust row height */
+
+        }
+        .ag-header-cell-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 65px;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <!-- Header content -->
+    </header>
+
+    <main>
+        <section class="hero text-center py-5">
+            <div class="container">
+                <h1 class="mb-4">Welcome to Fight Club</h1>
+                <div class="buttons">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="btn btn-danger mr-2">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary mr-2">Login</a>
+                        <a href="{% url 'register' %}" class="btn btn-success">Sign Up</a>
+                    {% endif %}
+                </div>
+                <h4 class="mt-4">Matches</h4>
+
+                <!-- ag-Grid container -->
+                <div class="ag-theme-alpine" id="myGrid" style="height: 300px; width: 100%;"></div>
+                
+            </div>
+        </section>
+    </main>
+
+    <!-- ag-Grid scripts -->
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+    <!-- Your script for creating ag-Grid -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if the user is authenticated
+            var authenticated = {% if user.is_authenticated %} true {% else %} false {% endif %};
+
+            var columnDefs = [
+                { headerName: 'Match', field: 'match_id' },
+                { headerName: 'Player1', field: 'player1' },
+                { headerName: 'Player2', field: 'player2' },
+                { headerName: 'Match Date', field: 'match_date' },
+                { headerName: 'Winner', field: 'winner_id' }
+            ];
+
+            // Conditionally add the "Action" column if the user is authenticated
+            if (authenticated) {
+                columnDefs.push({
+                    headerName: 'Action',
+                    cellRenderer: function (params) {
+                        return '<button class="btn btn-primary mt-3" onclick="fight(' + params.data.match_id + ')">Fight</button>';
+                    }
+                });
+            }
+
+            var gridOptions = {
+                columnDefs: columnDefs,
+                rowData: [
+                    {% for match in matches %}
+                        { match_id: '{{ match.match_id }}', player1: '{{ match.player1_id }}', player2: '{{ match.player2_id }}', match_date: '{{ match.match_date }}', winner_id: '{{ match.winner_id }}' },
+                    {% endfor %}
+                ]
+            };
+
+            // Fetch the container div for ag-Grid
+            var gridDiv = document.querySelector('#myGrid');
+
+            // Create ag-Grid instance
+            new agGrid.Grid(gridDiv, gridOptions);
+
+            // Function to handle the "Fight" button click
+            window.fight = function (matchId) {
+                // You can perform an action similar to the "Update Players" link
+                // For example, redirect to the 'fight' URL with the match_id
+                var fightUrl = "{% url 'fight' match_id='123' %}".replace('123', matchId);
+
+                // Redirect to the 'fight' URL
+                window.location.href = fightUrl;
+            };
+        });
+    </script>
+
+
+    <!-- Bootstrap and other necessary scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

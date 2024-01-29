@@ -1,0 +1,33 @@
+# This is an example Starter pipeline configuration
+# Use a skeleton to build, test and deploy using manual and parallel steps
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+
+image: atlassian/default-image:3
+
+pipelines:
+  default:
+    - step:
+        name: 'Build'
+        services:
+          - docker 
+        script:
+          - docker login -u $USERNAME -p $PASSWORD
+          - docker build --no-cache -t fightclub:latest .
+          - docker image tag fightclub:latest avj17/fightclub:latest
+          - docker push avj17/fightclub:latest
+    - step:
+        name: 'Deployment'
+        image: avj17/k8s-helm-gcp-base-image:latest
+        services:
+          - docker 
+        script:
+          - docker system prune -a
+          - docker pull avj17/fightclub:latest
+          - gcloud auth login --cred-file=/opt/atlassian/pipelines/agent/build/keys/angular-expanse-404606-cbae3afcf6e3.json
+          - gcloud config set project angular-expanse-404606
+          - gcloud container clusters get-credentials fight-club-cluster --region=northamerica-northeast2
+          - docker login -u $USERNAME -p $PASSWORD
+          - docker pull avj17/fightclub:latest
+          - helm upgrade django-app -f /opt/atlassian/pipelines/agent/build/helm/django-app-chart/values.yaml /opt/atlassian/pipelines/agent/build/helm/django-app-chart
+          - kubectl get all
