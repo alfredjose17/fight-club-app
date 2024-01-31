@@ -8,46 +8,89 @@
     <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-grid.css">
     <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-alpine.css">
     <style>
-        /* For CSS */
-        /* Optional: Add styling to your ag-Grid container */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        header h1 {
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .hero {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .buttons a {
+            margin-left: 10px;
+        }
+
+        .matches-heading {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #343a40;
+        }
+
         .ag-theme-alpine {
             height: 300px;
             width: 80%;
             margin: 20px auto;
-
         }
 
-        /* Center text content in the cells */
         .ag-theme-alpine .ag-cell {
             text-align: center;
-            line-height: 40px; /* Adjust row height */
-
+            line-height: 40px;
         }
-        .ag-header-cell-text {
+
+        .ag-theme-alpine .ag-header-cell-text {
             overflow: hidden;
             text-overflow: ellipsis;
-            padding-left: 65px;
-}
+            padding-left: 15px;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <header>
-        <!-- Header content -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Fight Club</a>
+            <div class="buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-success">Sign Up</a>
+                {% endif %}
+            </div>
+        </nav>
     </header>
 
     <main>
         <section class="hero text-center py-5">
             <div class="container">
-                <h1 class="mb-4">Welcome to Fight Club</h1>
-                <div class="buttons">
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'logout' %}" class="btn btn-danger mr-2">Logout</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-primary mr-2">Login</a>
-                        <a href="{% url 'register' %}" class="btn btn-success">Sign Up</a>
-                    {% endif %}
+                <div class="matches-heading">
+                    <h4>Matches</h4>
                 </div>
-                <h4 class="mt-4">Matches</h4>
 
                 <!-- ag-Grid container -->
                 <div class="ag-theme-alpine" id="myGrid" style="height: 300px; width: 100%;"></div>
@@ -111,10 +154,13 @@
         });
     </script>
 
-
     <!-- Bootstrap and other necessary scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <footer>
+        <p>&copy; 2024 Fight Club</p>
+    </footer>
 </body>
 </html>
