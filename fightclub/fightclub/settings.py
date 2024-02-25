@@ -84,7 +84,6 @@ DATABASES = {
         'NAME': 'mydb',
         #'USER': 'root',
         'USER': 'admin',
-        #'PASSWORD': '@Alfredvjose17',
         'PASSWORD': 'admin',
         #'HOST':'localhost',
         'HOST':'mysql-mysql-chart',
